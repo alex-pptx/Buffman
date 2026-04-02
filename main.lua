@@ -8,23 +8,28 @@ local buffman = {
 	desc = "You're so buff, man, take off your shirt bro."
 }
 
-local sigmawolfWindow
-
 --battlefocus rank3 13612
 --freerunner rank2 13779
 -- Changing this ID will change the buff displayed & tracked
 -- (127 is the ID for Inspire buff that thwart applies)
 local inspiredBuffId = 127
-local battleFocusBuffId = 13612
-local freeRunnerBuffId = 13779
-
-
 local inspiredBuffInfo = {}
-local battleFocusBuffInfo = {}
-local freeRunnerBuffInfo = {}
+local inspiredWindow
+local inspiredLabel
+local inspiredLabel2
 
-local xPos = 0
-local yPos = 0
+local battleFocusBuffId = 13612
+local battleFocusBuffInfo = {}
+local battleFocusWindow
+local battleFocusLabel
+local battleFocusLabel2
+
+local freeRunnerBuffId = 13779
+local freeRunnerBuffInfo = {}
+local freeRunnerWindow
+local freeRunnerLabel
+local freeRunnerLabel2
+
 
 
 function randIntEither()
@@ -36,58 +41,57 @@ function randIntEither()
 end
 
 local inspireBuff = {
-	freshStack = false,
-	stackTime = 0
+	buffId = 127,
+	isActive = false,
+	window = window,
+	title = "wolf",
+	drawable = drawable,
+	meme = "../Addon/buffman/assets/sigma.png",
+	label1 = label1,
+	label2 = label2,
 }
 local battleFocusBuff = {
-	freshStack = false,
-	stackTime = 0
+	buffId = 13612,
+	isActive = false,
+	window = window,
+	title = "u wont like me when im angry",
+	drawable = drawable,
+	meme = "../Addon/buffman/assets/guts.png",
+	label1 = label1,
+	label2 = label2,
 }
 local freeRunnerBuff = {
-	freshStack = false,
-	stackTime = 0
+	buffId = 13779,
+	isActive = false,
+	window = window,
+	title = "im fast af boi",
+	drawable = drawable,
+	meme = "../Addon/buffman/assets/naruto.png",
+	label1 = label1,
+	label2 = label2,
+}
+local frenzyBuff = {
+	buffId = 182,
+	isActive = false,
+	window = window,
+	title = "i miss my wife",
+	drawable = drawable,
+	meme = "../Addon/buffman/assets/corndog.png",
+	label1 = label1,
+	label2 = label2,
 }
 
-local function sigmaWolfActive()
-	xPos = randIntEither()
-	yPos = randIntEither()
-	sigmawolfWindow:AddAnchor("CENTER", "UIParent", xPos, yPos)
-	
+local function buffActive(trackedBuff)
+	-- xPos = randIntEither()
+	-- yPos = randIntEither()
+	trackedBuff:AddAnchor("CENTER", "UIParent", randIntEither(), randIntEither())
+	trackedBuff:Show(true)
 
-	-- show the sigma wolf image
-	sigmawolfWindow:Show(true)
-
-	-- api:DoIn(1000, sigmaWolfStop) this doesnt work for some reason
+	-- api:DoIn(1000, inspiredStop) this doesnt work for some reason
 end
 
-local function sigmaWolfStop()
-	sigmawolfWindow:Show(false)
-end
-
-local function gutsActive()
-	gutsWindow:AddAnchor("CENTER", "UIParent", randIntEither(), randIntEither())
-	
-
-	-- show the sigma wolf image
-	gutsWindow:Show(true)
-end
-
-local function gutsStop()
-	gutsWindow:Show(false)
-end
-
-local function narutoActive()
-	freeRunnerCanvas:AddAnchor("CENTER", "UIParent", randIntEither(), randIntEither())
-	
-
-	-- show the sigma wolf image
-	freeRunnerCanvas:Show(true)
-	-- narutoWindow:Show(true)
-end
-
-local function narutoStop()
-	freeRunnerCanvas:Show(false)
-	-- narutoWindow:Show(false)
+local function buffInactive(trackedBuff)
+	trackedBuff:Show(false)
 end
 
 local lastUpdate = 0
@@ -105,24 +109,30 @@ local function OnUpdate(dt)
 	--textRand = math.random(1, 2)
 	--alternate text color every update to make it flashy
 	if textRand == 0 then
-		ApplyTextColor(inspiredLabel, {0, 0.2, 0.7, 1})
-        ApplyTextColor(inspiredLabel2, {0.85, 0, 0.5, 1})
+		ApplyTextColor(inspireBuff.label1, {0, 0.2, 0.7, 1})
+        ApplyTextColor(inspireBuff.label2, {0.85, 0, 0.5, 1})
 
-		ApplyTextColor(freeRunnerLabel, {0, 0.2, 0.7, 1})
-        ApplyTextColor(freeRunnerLabel2, {0.85, 0, 0.5, 1})
+		ApplyTextColor(freeRunnerBuff.label1, {0, 0.2, 0.7, 1})
+        ApplyTextColor(freeRunnerBuff.label2, {0.85, 0, 0.5, 1})
 
-		ApplyTextColor(battleFocusLabel, {0, 0.2, 0.7, 1})
-        ApplyTextColor(battleFocusLabel2, {0.85, 0, 0.5, 1})
+		ApplyTextColor(battleFocusBuff.label1, {0, 0.2, 0.7, 1})
+        ApplyTextColor(battleFocusBuff.label2, {0.85, 0, 0.5, 1})
+
+		ApplyTextColor(frenzyBuff.label1, {0, 0.2, 0.7, 1})
+		ApplyTextColor(frenzyBuff.label2, {0.85, 0, 0.5, 1})
 		textRand = 1
 	else
-		ApplyTextColor(inspiredLabel, {0, 0.2, 1, 1})
-		ApplyTextColor(inspiredLabel2, {1, 0, 0.85, 1})
+		ApplyTextColor(inspireBuff.label1, {0, 0.2, 1, 1})
+		ApplyTextColor(inspireBuff.label2, {1, 0, 0.85, 1})
 
-		ApplyTextColor(freeRunnerLabel, {0, 0.2, 1, 1})
-		ApplyTextColor(freeRunnerLabel2, {1, 0, 0.85, 1})
+		ApplyTextColor(freeRunnerBuff.label1, {0, 0.2, 1, 1})
+		ApplyTextColor(freeRunnerBuff.label2, {1, 0, 0.85, 1})
 
-		ApplyTextColor(battleFocusLabel, {0, 0.2, 1, 1})
-		ApplyTextColor(battleFocusLabel2, {1, 0, 0.85, 1})
+		ApplyTextColor(battleFocusBuff.label1, {0, 0.2, 1, 1})
+		ApplyTextColor(battleFocusBuff.label2, {1, 0, 0.85, 1})
+
+		ApplyTextColor(frenzyBuff.label1, {0, 0.2, 1, 1})
+		ApplyTextColor(frenzyBuff.label2, {1, 0, 0.85, 1})
 		textRand = 0
 	end
 
@@ -135,36 +145,47 @@ local function OnUpdate(dt)
 	local buffCount = api.Unit:UnitBuffCount("player")
 	for i = 1, buffCount, 1 do
 		local buff = api.Unit:UnitBuff("player", i)
-		if buff.buff_id == inspiredBuffInfo.buff_id then
-			if buff.timeLeft > 31000 and inspireBuff.freshStack == false then
-				inspireBuff.freshStack = true
-				sigmaWolfActive()
+		if buff.buff_id == inspireBuff.buffId then
+			if buff.timeLeft > 31000 and inspireBuff.isActive == false then
+				inspireBuff.isActive = true
+				buffActive(inspireBuff.window)
 			end
-			if buff.timeLeft < 21000 and inspireBuff.freshStack == true then
-				inspireBuff.freshStack = false
-				sigmaWolfStop()
-			end
-			--return
-		end
-		if buff.buff_id == battleFocusBuffId then
-			if buff.timeLeft > 19000 and battleFocusBuff.freshStack == false then
-				battleFocusBuff.freshStack = true
-				gutsActive()
-			end
-			if buff.timeLeft < 9000 and battleFocusBuff.freshStack == true then
-				battleFocusBuff.freshStack = false
-				gutsStop()
+			if buff.timeLeft < 21000 and inspireBuff.isActive == true then
+				inspireBuff.isActive = false
+				buffInactive(inspireBuff.window)
 			end
 			--return
 		end
-		if buff.buff_id == freeRunnerBuffId then
-			if buff.timeLeft > 29000 and freeRunnerBuff.freshStack == false then
-				freeRunnerBuff.freshStack = true
-				narutoActive()
+		if buff.buff_id == battleFocusBuff.buffId then
+			if buff.timeLeft > 19000 and battleFocusBuff.isActive == false then
+				battleFocusBuff.isActive = true
+				buffActive(battleFocusBuff.window)
 			end
-			if buff.timeLeft < 18000 and freeRunnerBuff.freshStack == true then
-				freeRunnerBuff.freshStack = false
-				narutoStop()
+			if buff.timeLeft < 9000 and battleFocusBuff.isActive == true then
+				battleFocusBuff.isActive = false
+				buffInactive(battleFocusBuff.window)
+			end
+			--return
+		end
+		if buff.buff_id == freeRunnerBuff.buffId then
+			if buff.timeLeft > 29000 and freeRunnerBuff.isActive == false then
+				freeRunnerBuff.isActive = true
+				buffActive(freeRunnerBuff.window)
+			end
+			if buff.timeLeft < 18000 and freeRunnerBuff.isActive == true then
+				freeRunnerBuff.isActive = false
+				buffInactive(freeRunnerBuff.window)
+			end
+			--return
+		end
+		if buff.buff_id == frenzyBuff.buffId then
+			if buff.timeLeft > 19000 and frenzyBuff.isActive == false then
+				frenzyBuff.isActive = true
+				buffActive(frenzyBuff.window)
+			end
+			if buff.timeLeft < 10000 and frenzyBuff.isActive == true then
+				frenzyBuff.isActive = false
+				buffInactive(frenzyBuff.window)
 			end
 			--return
 		end
@@ -173,130 +194,102 @@ local function OnUpdate(dt)
 	--canvas:Show(false)
 end
 
-
-local function OnLoad()
-	-- inspired buff steup: rank6 buffid = 127
-	inspiredBuffInfo = api.Ability:GetBuffTooltip(inspiredBuffId)
-	-- create window to hold the sigma wolf image
-	sigmawolfWindow = api.Interface:CreateWindow("sigmawolfWindow", "wolf")
-	sigmawolfWindow:AddAnchor("CENTER", "UIParent", 0, 0)
-	sigmawolfWindow:SetExtent(300, 300)
-	sigmawolfWindow:SetSounds("community")
-
-	-- creating drawable for the sigma wolf image
-	local mapDrawable = sigmawolfWindow:CreateImageDrawable("Textures/Defaults/White.dds", "overlay")
-	mapDrawable:SetExtent(250, 250)
-    mapDrawable:AddAnchor("CENTER", sigmawolfWindow, 0, 10)
-	mapDrawable:SetSRGB(false)
-	mapDrawable:SetTgaTexture("../Addon/buffman/assets/sigma.png")
-	mapDrawable:SetVisible(true)
+local function buffBuilder(buffWindow, buffInfo, memeDrawable, label1, label2)
+	-- setup the buff window attributes
+	buffWindow:AddAnchor("CENTER", "UIParent", 0, 0)
+	buffWindow:SetExtent(300, 300)
+	buffWindow:SetSounds("community")
+	
+	-- setup drawable attributes for the meme image
+	memeDrawable:SetExtent(250, 250)
+    memeDrawable:AddAnchor("CENTER", buffWindow, 0, 10)
+	memeDrawable:SetSRGB(false)
+	memeDrawable:SetVisible(true)
 
 	-- create 2 text labels for the buff name, offset slightly to create a shadow effect
-	inspiredLabel = sigmawolfWindow:CreateChildWidget("label", "label", 0, true)
-	inspiredLabel:AddAnchor("TOP", sigmawolfWindow, "TOP", 0, -35)
-	inspiredLabel:SetText(string.format("%s POPPED", inspiredBuffInfo.name))
-	ApplyTextColor(inspiredLabel, {0, 0.2, 1, 1})
-	inspiredLabel.style:SetFontSize(44)
+	label1:AddAnchor("TOP", buffWindow, "TOP", 0, -35)
+	label1:SetText(string.format("%s POPPED", buffInfo.name))
+	ApplyTextColor(label1, {0, 0.2, 1, 1})
+	label1.style:SetFontSize(44)
 
+	label2:AddAnchor("TOP", buffWindow, "TOP", 5, -30)
+	label2:SetText(string.format("%s POPPED", buffInfo.name))
+	ApplyTextColor(label2, {1, 0, 0.85, 1})
+	label2.style:SetFontSize(44)
+end
 
-	inspiredLabel2 = sigmawolfWindow:CreateChildWidget("label", "label", 0, true)
-	inspiredLabel2:AddAnchor("TOP", sigmawolfWindow, "TOP", 5, -30)
-	inspiredLabel2:SetText(string.format("%s POPPED", inspiredBuffInfo.name))
-	ApplyTextColor(inspiredLabel2, {1, 0, 0.85, 1})
-	inspiredLabel2.style:SetFontSize(44)
+local function buffBuilderCopy(trackedBuff)
+	local buffInfo = api.Ability:GetBuffTooltip(trackedBuff.buffId)
+
+	-- setup the buff window attributes
+	trackedBuff.window = api.Interface:CreateWindow("inspiredWindow", trackedBuff.title)
+	trackedBuff.window:AddAnchor("CENTER", "UIParent", 0, 0)
+	trackedBuff.window:SetExtent(300, 300)
+	trackedBuff.window:SetSounds("community")
+	
+	-- setup drawable attributes for the meme image
+	trackedBuff.drawable = trackedBuff.window:CreateImageDrawable("Textures/Defaults/White.dds", "overlay")
+	trackedBuff.drawable:SetTgaTexture(trackedBuff.meme)
+	trackedBuff.drawable:SetExtent(250, 250)
+    trackedBuff.drawable:AddAnchor("CENTER", trackedBuff.window, 0, 10)
+	trackedBuff.drawable:SetSRGB(false)
+	trackedBuff.drawable:SetVisible(true)
+
+	-- create 2 text labels for the buff name, offset slightly to create a shadow effect
+	trackedBuff.label1 = trackedBuff.window:CreateChildWidget("label", "label", 0, true)
+	trackedBuff.label1:AddAnchor("TOP", trackedBuff.window, "TOP", 0, -35)
+	trackedBuff.label1:SetText(string.format("%s POPPED", buffInfo.name))
+	ApplyTextColor(trackedBuff.label1, {0, 0.2, 1, 1})
+	trackedBuff.label1.style:SetFontSize(44)
+
+	trackedBuff.label2 = trackedBuff.window:CreateChildWidget("label", "label", 0, true)
+	trackedBuff.label2:AddAnchor("TOP", trackedBuff.window, "TOP", 5, -30)
+	trackedBuff.label2:SetText(string.format("%s POPPED", buffInfo.name))
+	ApplyTextColor(trackedBuff.label2, {1, 0, 0.85, 1})
+	trackedBuff.label2.style:SetFontSize(44)
+end
+
+local function OnLoad()
+	-- inspired buff setup: rank6 buffid = 127
+	-- create window to hold the sigma wolf image
+	buffBuilderCopy(inspireBuff)
 	-- end inspired buff setup
 
 
 	-- battlefocus buff setup: rank3 buffid = 13612
-	battleFocusBuffInfo = api.Ability:GetBuffTooltip(battleFocusBuffId)
-	-- create window to hold the guts image
-	gutsWindow = api.Interface:CreateWindow("gutsWindow", "u wont like me when im angry")
-	gutsWindow:AddAnchor("CENTER", "UIParent", 0, 0)
-	gutsWindow:SetExtent(300, 300)
-	gutsWindow:SetSounds("community")
-
-	-- creating drawable for the guts image
-	local gutsDrawable = gutsWindow:CreateImageDrawable("Textures/Defaults/White.dds", "overlay")
-	gutsDrawable:SetExtent(250, 250)
-    gutsDrawable:AddAnchor("CENTER", gutsWindow, 0, 10)
-	gutsDrawable:SetSRGB(false)
-	gutsDrawable:SetTgaTexture("../Addon/buffman/assets/guts.png")
-	gutsDrawable:SetVisible(true)
-
-	-- create 2 text labels for the buff name, offset slightly to create a shadow effect
-	battleFocusLabel = gutsWindow:CreateChildWidget("label", "label", 0, true)
-	battleFocusLabel:AddAnchor("TOP", gutsWindow, "TOP", 0, -35)
-	battleFocusLabel:SetText(string.format("%s POPPED", battleFocusBuffInfo.name))
-	ApplyTextColor(battleFocusLabel, {0, 0.2, 1, 1})
-	battleFocusLabel.style:SetFontSize(44)
-
-
-	battleFocusLabel2 = gutsWindow:CreateChildWidget("label", "label", 0, true)
-	battleFocusLabel2:AddAnchor("TOP", gutsWindow, "TOP", 5, -30)
-	battleFocusLabel2:SetText(string.format("%s POPPED", battleFocusBuffInfo.name))
-	ApplyTextColor(battleFocusLabel2, {1, 0, 0.85, 1})
-	battleFocusLabel2.style:SetFontSize(44)
+	-- create window to hold the battleFocus image
+	buffBuilderCopy(battleFocusBuff)
 	-- end battlefocus buff setup
 
 
-
-
-	--freerunner rank2 13779
-	freeRunnerBuffInfo = api.Ability:GetBuffTooltip(freeRunnerBuffId)
+	--freerunner buff setup: rank2 buffid = 13779
 	-- create empty window to hold the freerunner buff icon and text	
-	freeRunnerCanvas = api.Interface:CreateWindow("freeRunnerAlert", "im fast as fuck boi")
-	freeRunnerCanvas:AddAnchor("CENTER", "UIParent", 0, 0)
-	freeRunnerCanvas:SetExtent(300, 300)
-	freeRunnerCanvas:SetSounds("community")
+	buffBuilderCopy(freeRunnerBuff)
+	-- end freerunner buff setup
 
-	-- creating drawable for the naruto image
-	local narutoDrawable = freeRunnerCanvas:CreateImageDrawable("Textures/Defaults/White.dds", "overlay")
-	narutoDrawable:SetExtent(250, 250)
-    narutoDrawable:AddAnchor("CENTER", freeRunnerCanvas, 0, 10)
-	narutoDrawable:SetSRGB(false)
-	narutoDrawable:SetTgaTexture("../Addon/buffman/assets/naruto.png")
-	narutoDrawable:SetVisible(true)
-
-	
-	freeRunnerLabel = freeRunnerCanvas:CreateChildWidget("label", "label", 0, true)
-	freeRunnerLabel:SetText(string.format("%s POPPED", freeRunnerBuffInfo.name))
-	ApplyTextColor(freeRunnerLabel, {0, 0.2, 1, 1})
-	freeRunnerLabel:AddAnchor("TOP", freeRunnerCanvas, "TOP", 0, -35)
-	freeRunnerLabel.style:SetFontSize(44)
-	
-
-	freeRunnerLabel2 = freeRunnerCanvas:CreateChildWidget("label", "label", 0, true)
-	freeRunnerLabel2:SetText(string.format("%s POPPED", freeRunnerBuffInfo.name))
-	ApplyTextColor(freeRunnerLabel2, {1, 0, 0.85, 1})
-	freeRunnerLabel2:AddAnchor("TOP", freeRunnerCanvas, "TOP", 5, -30)
-	freeRunnerLabel2.style:SetFontSize(44)
-
-	
-	
+	--frenzy buff setup: rank1 buffid = 182
+	-- create empty window to hold the frenzy buff icon and text	
+	buffBuilderCopy(frenzyBuff)
+	-- end freerunner buff setup
 
 
   api.On("UPDATE", OnUpdate)
 end
 
 local function OnUnload()
-	if freeRunnerCanvas ~= nil then
-		freeRunnerCanvas:Show(false)
-		freeRunnerCanvas = nil
-	end
-
-    if sigmawolfWindow ~= nil then
-        sigmawolfWindow:Show(false)
-        sigmawolfWindow = nil
+    if inspireBuff.window ~= nil then
+        inspireBuff.window:Show(false)
+        inspireBuff.window = nil
     end
 
-	if gutsWindow ~= nil then
-        gutsWindow:Show(false)
-        gutsWindow = nil
+	if battleFocusBuff.window ~= nil then
+        battleFocusBuff.window:Show(false)
+        battleFocusBuff.window = nil
     end
 
-	if narutoWindow ~= nil then
-        narutoWindow:Show(false)
-        narutoWindow = nil
+	if freeRunnerBuff.window ~= nil then
+        freeRunnerBuff.window:Show(false)
+        freeRunnerBuff.window = nil
     end
 end
 
